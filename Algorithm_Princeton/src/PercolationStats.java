@@ -13,8 +13,8 @@ public class PercolationStats {
 
 		this.n = n;
 		this.trials = trials;
-		// Let x[t] be the fraction of open sites in
-		// computational experiment t.
+
+		// Let x[t] be the fraction of open sites in computational experiment t.
 		double[] x = new double[trials];
 
 		experiment(x);
