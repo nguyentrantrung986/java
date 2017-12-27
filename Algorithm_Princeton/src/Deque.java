@@ -1,4 +1,8 @@
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Deque<Item> implements Iterable<Item>  {
 	private Node first, last;
@@ -44,8 +48,11 @@ public class Deque<Item> implements Iterable<Item>  {
 		
 		if(!isEmpty())
 			last.next=newLast;
+		else
+			first = newLast;
 		
 		last = newLast;
+		
 		n++;
 	}
 	
@@ -56,7 +63,8 @@ public class Deque<Item> implements Iterable<Item>  {
 		
 		Item item = first.item;
 		first = first.next;
-		first.prev = null;
+		if(first != null)
+			first.prev = null;
 		n--;
 		return item;
 	}
@@ -68,20 +76,86 @@ public class Deque<Item> implements Iterable<Item>  {
 				
 		Item item = last.item;
 		last = last.prev;
-		last.next = null;
+		if(last != null)
+			last.next = null;
+		else
+			first = null; //the deque is now empty
 		n--;
 		return item;
 	}
 	
 	@Override
 	public Iterator<Item> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DequeIterator();
+	}
+	
+	private class DequeIterator implements Iterator<Item>{
+		private Node current = first;
+		
+		@Override
+		public boolean hasNext() {
+			return current != null;
+		}
+
+		@Override
+		public Item next() {
+			if(!hasNext())
+				throw new NoSuchElementException();
+			
+			Item item = current.item;
+			current = current.next;
+			return item;
+		}
+		
+		public void remove(){
+			throw new UnsupportedOperationException();
+		}
 	}
 	
 	private class Node{
 		Item item;
 		Node next;
 		Node prev;
+	}
+	
+	//unit testing
+	public static void main(String[] args){		
+		Deque<Integer> d = new Deque<Integer>();
+		
+		StdOut.println("Deque Operations: add first:1; add last:2; "
+				+ "remove First:3; remove Last:4; do nothing:other");
+		int item;
+		
+		do{
+			StdOut.print("Operation:");
+			int op = StdIn.readInt();
+			
+			switch(op){
+			case 1:
+				StdOut.print("Item:");
+				item = StdIn.readInt();
+				d.addFirst(item);
+				break;
+			case 2:
+				StdOut.print("Item:");
+				item = StdIn.readInt();
+				d.addLast(item);
+				break;
+			case 3: d.removeFirst();
+			break;
+			case 4: d.removeLast();
+			break;
+			}
+			
+//			Iterator<Integer> ite = d.iterator();
+//			while(ite.hasNext()){
+//				Integer i = ite.next();
+//				StdOut.print(i+" ");
+//			}
+			for(Integer i:d){
+				StdOut.print(i+" ");
+			}
+			StdOut.println();
+		}while(true);
 	}
 }
