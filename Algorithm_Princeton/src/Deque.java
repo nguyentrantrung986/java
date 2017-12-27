@@ -28,11 +28,14 @@ public class Deque<Item> implements Iterable<Item>  {
 		Node newFirst = new Node();
 		newFirst.item = item;
 		newFirst.next = first;
-		newFirst.prev = null;
-		first = newFirst;
+		newFirst.prev = null;				
 		
 		if(isEmpty())
 			last=newFirst;
+		else
+			first.prev = newFirst;
+		
+		first = newFirst;
 		n++;
 	}
 	
