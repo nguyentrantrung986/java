@@ -27,8 +27,16 @@ public class MergeSortBottomUp extends ElementarySort{
 		for(int k =l; k<=r; k++){
 			if(i>mid) 						a[k]=aux[j++];
 			else if(j>r) 					a[k]=aux[i++];
+			/*stable code, if there is 2 equal keys, the code insert the item from the left half first
+			 * therefore, preserving the relative orders before sorting.
+			 */
+			else if(less(aux[j],aux[i]))	a[k]=aux[j++];
+			else 							a[k]=aux[i++];
+			/*the following code would be unstable, because if there are 2 equal keys, the code
+			 * insert the item from the right half first
 			else if(less(aux[i],aux[j])) 	a[k]=aux[i++];
 			else 							a[k]=aux[j++];
+			*/
 		}
 		
 		assert isSorted(a,l,r); // postcondition: a[lo..hi] sorted

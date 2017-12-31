@@ -46,8 +46,16 @@ public class MergeSortOptimized extends ElementarySort{
 		for(int k =l; k<=r; k++){
 			if(i>mid) 						aux[k]=a[j++];
 			else if(j>r) 					aux[k]=a[i++];
+			/*stable code, if there is 2 equal keys, the code insert the item from the left half first
+			 * therefore, preserving the relative orders before sorting.
+			 */
+			else if(less(a[j],a[i]))		aux[k]=a[j++];
+			else 							aux[k]=a[i++];
+			/*the following code would be unstable, because if there are 2 equal keys, the code
+			 * insert the item from the right half first
 			else if(less(a[i],a[j])) 		aux[k]=a[i++];
 			else 							aux[k]=a[j++];
+			*/
 			
 //			System.out.print(aux[k]+" - ");
 		}
