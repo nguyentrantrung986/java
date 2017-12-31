@@ -6,18 +6,25 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class ElementarySort {
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	protected static boolean less(Comparable v, Comparable w){
 		return v.compareTo(w) < 0;
 	}
 	
-	@SuppressWarnings("rawtypes")
 	protected static void exchange(Comparable[] a, int i, int j){
 		Comparable swap = a[i];
 		a[i] = a[j];
 		a[j] = swap;
+	}
+	
+	protected static boolean isSorted(Comparable[] a, int lo, int hi){
+		if(hi<lo) throw new IllegalArgumentException("High index must be greater than low index");
+		
+		for(int i=lo; i<=hi; i++)
+			if(!less(a[i],a[i+1])) return false;
+		return true;
 	}
 	
 	protected static Integer[] getIntegerTestData(String fileName){

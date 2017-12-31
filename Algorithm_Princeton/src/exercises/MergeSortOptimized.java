@@ -26,13 +26,21 @@ public class MergeSortOptimized extends ElementarySort{
 		sort(aux, a, l, mid);
 		sort(aux, a, mid+1, r);
 		
-		if(!less(a[mid],a[mid+1])) //check if a has not already been sorted
-			merge(a, aux, l, mid, r);
+	/*if(!less(a[mid],a[mid+1])) //check if a has not already been sorted
+	 * cannot be done for optimized version because 2 arrays switch role every recursive call
+	 * so always have to call merged to copy data from one to the other
+	 */
+		merge(a, aux, l, mid, r);
 	}
 	
 	private static void merge(Comparable[]a, Comparable[] aux, int l, int mid, int r){
-//		for(int i=l; i<=r; i++)
-//			aux[i] = a[i];
+		assert isSorted(a,l,mid);	// precondition: a[lo..mid] sorted
+		assert isSorted(a,mid+1,r);	// precondition: a[mid+1..hi] sorted
+//		for(int k =l; k<=r; k++){
+//			System.out.print(a[k]+" - ");
+//			if(k==mid) System.out.print("|");
+//		}
+//		System.out.println();
 		
 		int i = l, j = mid+1;
 		for(int k =l; k<=r; k++){
@@ -40,13 +48,17 @@ public class MergeSortOptimized extends ElementarySort{
 			else if(j>r) 					aux[k]=a[i++];
 			else if(less(a[i],a[j])) 		aux[k]=a[i++];
 			else 							aux[k]=a[j++];
+			
+//			System.out.print(aux[k]+" - ");
 		}
+//		System.out.println();
+		assert isSorted(aux,l,r); // postcondition: aux[lo..hi] sorted
 	}
 	
 	//unit testing
 	public static void main(String[] args){
-//		Integer[] a = getIntegerTestData("test\\integerRandomOrder.txt");
-		Integer[] a = {2148,9058,7742,3153,6324,609,7628,5469,7017,504};
+		Integer[] a = getIntegerTestData("test\\integerRandomOrder.txt");
+//		Integer[] a = {2148,9058,7742,3153,6324,609,7628,5469,7017,504};
 		
 		Stopwatch timer1 = new Stopwatch();
 		MergeSortOptimized.sort(a);

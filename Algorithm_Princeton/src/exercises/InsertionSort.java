@@ -16,7 +16,7 @@ public class InsertionSort extends ElementarySort {
 	}
 	
 	public static void main(String[] args){
-		Integer[] a = getIntegerTestData("test\\integerReversedOrder.txt");
+		Integer[] a = getIntegerTestData("test\\integerRandomOrder.txt");
 
 		Stopwatch timer1 = new Stopwatch();
 		InsertionSort.sort(a);

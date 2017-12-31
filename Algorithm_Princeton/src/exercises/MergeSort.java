@@ -23,16 +23,22 @@ public class MergeSort extends ElementarySort{
 	}
 	
 	private static void merge(Comparable[]a, Comparable[] aux, int l, int mid, int r){
+		assert isSorted(a,l,mid);	// precondition: a[lo..mid] sorted
+		assert isSorted(a,mid+1,r);	// precondition: a[mid+1..hi] sorted
+		
 		for(int i=l; i<=r; i++)
 			aux[i] = a[i];
 		
 		int i = l, j = mid+1;
+		
 		for(int k =l; k<=r; k++){
 			if(i>mid) 						a[k]=aux[j++];
 			else if(j>r) 					a[k]=aux[i++];
-			else if(less(a[i],a[j])) 		a[k]=aux[i++];
+			else if(less(aux[i],aux[j])) 	a[k]=aux[i++];
 			else 							a[k]=aux[j++];
 		}
+		
+		assert isSorted(a,l,r); // postcondition: a[lo..hi] sorted
 	}
 	
 	//unit testing
@@ -41,7 +47,7 @@ public class MergeSort extends ElementarySort{
 //		Integer[] a = {2148,9058,7742,3153,6324,609,7628,5469,7017,504};
 		
 		Stopwatch timer1 = new Stopwatch();
-		MergeSortOptimized.sort(a);
+		MergeSort.sort(a);
 		StdOut.println("Merge sort runs for "+timer1.elapsedTime() + " seconds");
 		
 		for (int i : a) System.out.print(i+" - ");
