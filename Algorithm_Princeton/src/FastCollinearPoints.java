@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Bag;
 
 public class FastCollinearPoints {
 	private Point[] points;
@@ -39,21 +39,20 @@ public class FastCollinearPoints {
 
 	public LineSegment[] segments() {
 		if (arraySegments == null) {
-			Queue<LineSegment> queueSegments = new Queue<>();
+			Bag<LineSegment> bagSegments = new Bag<>();
 
 			for (int i = 0; i < points.length; i++) {
+				//mark if the point has been included in a collinear segment or not
+				boolean[] isCollinear = new boolean[points.length-i-1]; 
 				Point[] aux = new Point[points.length-i-1];
 				for (int j = 0; j < aux.length; j++)
-					aux[j] = points[i+1];
+					aux[j] = points[j+i+1];
 				Comparator<Point> c = points[i].slopeOrder();
 				// sort other points according to the slope they make with point
 				// index i
 				Arrays.sort(aux, c);
 
-				// points[i] will be at index 0 of the auxiliary array after
-				// sorting
-				// because the slope to itself is defined as negative infinity
-				for (int j = 1; j < aux.length-1; j++) {
+				for (int j = 0; j < aux.length-1;j++) {
 					double slope1 = points[i].slopeTo(aux[j]);
 					double slope2 = points[i].slopeTo(aux[j + 1]);
 
@@ -66,27 +65,52 @@ public class FastCollinearPoints {
 						if (max.compareTo(aux[j]) < 0)
 							max = aux[j];
 						
+						if (min.compareTo(aux[j+1]) > 0)
+							min = aux[j+1];
+						if (max.compareTo(aux[j+1]) < 0)
+							max = aux[j+1];
+						
 						for (int k = j + 2; k < aux.length; k++) {
 							double slope3 = points[i].slopeTo(aux[k]);
-							if (slope2 == slope3) { // found 4 collinear points
+							// found the 4th collinear point which has not been included into any 
+							// collinear segments before
+							if (slope2 == slope3 && isCollinear[k]==false) { 
 								fourthFound=true;
+								isCollinear[k]=true;
 								
 								if (min.compareTo(aux[k]) > 0)
-									min = aux[j];
+									min = aux[k];
 								if (max.compareTo(aux[k]) < 0)
-									max = aux[j];
+									max = aux[k];
 							}
 						}
 						
-						if(fourthFound)
-							queueSegments.enqueue(new LineSegment(min, max));
+						if(fourthFound){
+							isCollinear[j]=true;
+							isCollinear[j+1]=true;
+							
+							//check if this line segment has been added to the bag before
+							boolean alreadyAdded = false;
+							LineSegment ls = new LineSegment(min, max);
+							for(LineSegment l: bagSegments){
+								if(l.toString().equals(ls.toString()))
+									alreadyAdded = true;
+							}
+							
+							if(!alreadyAdded)
+								bagSegments.add(ls);
+						}
 					}
 				}
 			}
 			
-			arraySegments=new LineSegment[queueSegments.size()];
-			for(int i=0; i<arraySegments.length;i++)
-				arraySegments[i] = queueSegments.dequeue();
+			arraySegments=new LineSegment[bagSegments.size()];
+			
+			int i=0;
+			for(LineSegment l: bagSegments){
+				arraySegments[i] = l;
+				i++;
+			}
 		}
 
 		return arraySegments;
