@@ -74,7 +74,7 @@ public class FastCollinearPoints {
 						for (int k = j + 2; k < aux.length; k++) {
 							// found the 4th collinear point which has not been included into any 
 							// collinear segments before
-							if (isCollinear[k]==false && isCollinear(points[i], aux[j], aux[j+1], aux[k])) { 
+							if (isCollinear[k]==false && areCollinear(points[i], aux[j], aux[j+1], aux[k])) { 
 								fourthFound=true;
 								isCollinear[k]=true;
 								
@@ -93,7 +93,7 @@ public class FastCollinearPoints {
 							boolean alreadyAdded = false;
 
 							for(PointPair pp: bagPointPairs){
-								if(isCollinear(min, max, pp.x, pp.y))
+								if(areCollinear(min, max, pp.x, pp.y))
 									alreadyAdded = true;
 							}
 							
@@ -134,7 +134,7 @@ public class FastCollinearPoints {
 	 * @param p4
 	 * @return true if 4 points are collinear, false otherwise
 	 */
-	private boolean isCollinear(Point p1, Point p2, Point p3, Point p4){
+	private static boolean areCollinear(Point p1, Point p2, Point p3, Point p4){
 		double slope1 = p1.slopeTo(p2);
 		double slope2 = p1.slopeTo(p3);
 		double slope3 = p1.slopeTo(p4);

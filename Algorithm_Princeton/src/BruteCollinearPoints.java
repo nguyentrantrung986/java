@@ -112,7 +112,7 @@ public class BruteCollinearPoints {
 		}
 	}
 	
-	private boolean isCollinear(Point p1, Point p2, Point p3, Point p4){
+	private static boolean isCollinear(Point p1, Point p2, Point p3, Point p4){
 		double slope1 = p1.slopeTo(p2);
 		double slope2 = p1.slopeTo(p3);
 		double slope3 = p1.slopeTo(p4);
