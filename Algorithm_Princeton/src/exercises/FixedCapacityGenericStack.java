@@ -1,3 +1,4 @@
+package exercises;
 
 public class FixedCapacityGenericStack<Item> {
 	private Item[] s;

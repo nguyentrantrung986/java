@@ -1,3 +1,4 @@
+package exercises;
 /* ~2lgN Time algorithm
  * 	
 The recursive formula f(L) = f(L/2) + log(L/2) + c doesn't lead to f(L) = O(log(N)) but leads to f(L) = O((log(N))^2) !

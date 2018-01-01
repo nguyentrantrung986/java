@@ -1,3 +1,4 @@
+package exercises;
 
 public class BitonicArraySearch {
 	public boolean bitonicSearch(int[] array, int x) {
