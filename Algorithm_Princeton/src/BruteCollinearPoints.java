@@ -41,7 +41,7 @@ public class BruteCollinearPoints {
 	 */
 	public LineSegment[] segments() {
 		if (arraySegments == null) {
-			Queue<LineSegment> queueSegments = new Queue<>();
+			Queue<PointPair> queuePointPairs = new Queue<>();
 
 			for (int i = 0; i < points.length; i++) {
 				for (int j = i + 1; j < points.length; j++) {
@@ -51,10 +51,9 @@ public class BruteCollinearPoints {
 							Point max = points[i];
 							boolean fourthPointFound = false;
 							
-							//the inner most for only runs if 3 collinear points are found
-							//only consider points not included in previously found segments
+							//the innermost for loop only runs if 3 collinear points are found
 							for (int l = k + 1; l < points.length; l++) {
-								if (points[i].slopeTo(points[k]) == points[i].slopeTo(points[l])) {
+								if (isCollinear(points[i], points[j], points[k], points[l])) {
 									fourthPointFound = true;
 									
 									if (min.compareTo(points[j]) > 0)
@@ -74,23 +73,61 @@ public class BruteCollinearPoints {
 								}
 							}
 							
-							if(fourthPointFound){								
-								queueSegments.enqueue(new LineSegment(min, max));
+							if(fourthPointFound){	
+								//check if this line segment has been added to the bag before
+								boolean alreadyAdded = false;
+
+								for(PointPair pp: queuePointPairs){
+									if(isCollinear(min, max, pp.x, pp.y))
+										alreadyAdded = true;
+								}
+								
+								if(!alreadyAdded)
+								queuePointPairs.enqueue(new PointPair(min, max));
 							}
 						}
 					}
 				}
 			}
 
-			LineSegment[] arraySegments = new LineSegment[queueSegments.size()];
+			LineSegment[] arraySegments = new LineSegment[queuePointPairs.size()];
 			int i = 0;
-			for (LineSegment ls : queueSegments) {
-				arraySegments[i++] = ls;
+			for (PointPair pp : queuePointPairs) {
+				arraySegments[i++] = new LineSegment(pp.x, pp.y);
 			}
 
 			this.arraySegments = arraySegments;
 		}
 
 		return arraySegments;
+	}
+	
+	private class PointPair{
+		Point x;
+		Point y;
+		
+		public PointPair(Point x, Point y){
+			this.x = x;
+			this.y = y;
+		}
+	}
+	
+	private boolean isCollinear(Point p1, Point p2, Point p3, Point p4){
+		double slope1 = p1.slopeTo(p2);
+		double slope2 = p1.slopeTo(p3);
+		double slope3 = p1.slopeTo(p4);
+		
+		//if there are 3 equal points, then they must be linear
+		if(slope1==Double.NEGATIVE_INFINITY && slope2==Double.NEGATIVE_INFINITY) return true;
+		if(slope1==Double.NEGATIVE_INFINITY && slope3==Double.NEGATIVE_INFINITY) return true;
+		if(slope2==Double.NEGATIVE_INFINITY && slope3==Double.NEGATIVE_INFINITY) return true;
+		//if there are 2 equal points, one slope will be negative infinity
+		if(slope1==Double.NEGATIVE_INFINITY && slope2==slope3) return true;
+		if(slope2==Double.NEGATIVE_INFINITY && slope1==slope3) return true;
+		if(slope3==Double.NEGATIVE_INFINITY && slope1==slope2) return true;
+		//if the three slopes are equal, the 4 points are collinear.
+		if(slope1==slope2 && slope1==slope3) return true;
+		
+		return false;
 	}
 }

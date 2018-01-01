@@ -25,7 +25,7 @@ public class CollinearTest {
 	    StdDraw.show();
 
 	    // print and draw the line segments
-	    //BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+//	    BruteCollinearPoints collinear = new BruteCollinearPoints(points);
 	    FastCollinearPoints collinear = new FastCollinearPoints(points);
 	    StdOut.println("Found "+collinear.numberOfSegments()+" collinear segments.");
 	    for (LineSegment segment : collinear.segments()) {
