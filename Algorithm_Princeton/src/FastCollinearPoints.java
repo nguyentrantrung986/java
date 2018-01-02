@@ -30,6 +30,12 @@ public class FastCollinearPoints {
 		}
 
 		this.points = points.clone();
+		// sort the array according to natural order of points once
+		// if sorting by slope is stable, then the lowest and highest points of
+		// segment can be found
+		// at lowest and highest indices of all collinear points being
+		// considered
+		Arrays.sort(this.points);
 	}
 
 	public int numberOfSegments() {
@@ -44,8 +50,8 @@ public class FastCollinearPoints {
 			Bag<PointPair> bagPointPairs = new Bag<>();
 
 			for (int i = 0; i < points.length; i++) {
-				// mark if the point has been included in a collinear segment or
-				// not
+				// mark if the point has been included in a collinear segment
+				// with points[i]
 				boolean[] isCollinear = new boolean[points.length - i - 1];
 				// auxiliary array contains all points other than points[i]
 				Point[] aux = new Point[points.length - i - 1];
@@ -60,48 +66,46 @@ public class FastCollinearPoints {
 					double slope1 = points[i].slopeTo(aux[j]);
 					double slope2 = points[i].slopeTo(aux[j + 1]);
 
-					if (slope1 == slope2) { // found 3 collinear points
+					if (slope1 == slope2) {
+						// found 3 collinear points, min point point index i in
+						// original array
 						Point min = points[i];
-						Point max = points[i];
-						boolean fourthFound = false;
-						if (min.compareTo(aux[j]) > 0)
-							min = aux[j];
-						if (max.compareTo(aux[j]) < 0)
-							max = aux[j];
-
-						if (min.compareTo(aux[j + 1]) > 0)
-							min = aux[j + 1];
-						if (max.compareTo(aux[j + 1]) < 0)
-							max = aux[j + 1];
+						Point max = null;
 
 						for (int k = j + 2; k < aux.length; k++) {
-							// found the 4th collinear point which has not been
-							// included into any
-							// collinear segments before
-							if (isCollinear[k] == false && areCollinear(points[i], aux[j], aux[j + 1], aux[k])) {
-								fourthFound = true;
-								isCollinear[k] = true;
+							// found the next collinear point
+							if (isCollinear[k] == false) {
+								Double slope3 = points[i].slopeTo(aux[k]);
 
-								if (min.compareTo(aux[k]) > 0)
-									min = aux[k];
-								if (max.compareTo(aux[k]) < 0)
+								if (slope1 == slope3) {
+									// due to natural order, max index holds the
+									// largest point of the collinear segment
 									max = aux[k];
-							}
+									isCollinear[k] = true;
+								}
+							} else
+								break;
 						}
 
-						if (fourthFound) {
+						// if max == null then the fourth point is not found
+						if (max != null) {
 							isCollinear[j] = true;
 							isCollinear[j + 1] = true;
-
 							// check if this line segment has been added to the
 							// bag before
 							boolean alreadyAdded = false;
 
 							for (PointPair pp : bagPointPairs) {
-								if (areCollinear(min, max, pp.x, pp.y))
-									alreadyAdded = true;
+								/* Due to natural order of points, all subsequent subsegments
+								 * will have the same maximum point with the correct segment, and
+								 * the correct segment is always found first.
+								 */ 
+								if (max == pp.max)
+									if (slope1==pp.min.slopeTo(pp.max)) {
+										alreadyAdded = true;
+										break;
+									}
 							}
-
 							if (!alreadyAdded)
 								bagPointPairs.add(new PointPair(min, max));
 						}
@@ -113,22 +117,23 @@ public class FastCollinearPoints {
 
 			int i = 0;
 			for (PointPair pp : bagPointPairs) {
-				arraySegments[i] = new LineSegment(pp.x, pp.y);
+				arraySegments[i] = new LineSegment(pp.min, pp.max);
 				i++;
 			}
 		}
-		
-		//immutable: prevent the client from modifying the original array of Segment
+
+		// immutable: prevent the client from modifying the original array of
+		// Segment
 		return arraySegments.clone();
 	}
 
 	private class PointPair {
-		Point x;
-		Point y;
+		Point min;
+		Point max;
 
 		public PointPair(Point x, Point y) {
-			this.x = x;
-			this.y = y;
+			this.min = x;
+			this.max = y;
 		}
 	}
 
@@ -141,29 +146,29 @@ public class FastCollinearPoints {
 	 * @param p4
 	 * @return true if 4 points are collinear, false otherwise
 	 */
-	private static boolean areCollinear(Point p1, Point p2, Point p3, Point p4) {
-		double slope1 = p1.slopeTo(p2);
-		double slope2 = p1.slopeTo(p3);
-		double slope3 = p1.slopeTo(p4);
-
-		// if there are 3 equal points, then they must be linear
-		if (slope1 == Double.NEGATIVE_INFINITY && slope2 == Double.NEGATIVE_INFINITY)
-			return true;
-		if (slope1 == Double.NEGATIVE_INFINITY && slope3 == Double.NEGATIVE_INFINITY)
-			return true;
-		if (slope2 == Double.NEGATIVE_INFINITY && slope3 == Double.NEGATIVE_INFINITY)
-			return true;
-		// if there are 2 equal points, one slope will be negative infinity
-		if (slope1 == Double.NEGATIVE_INFINITY && slope2 == slope3)
-			return true;
-		if (slope2 == Double.NEGATIVE_INFINITY && slope1 == slope3)
-			return true;
-		if (slope3 == Double.NEGATIVE_INFINITY && slope1 == slope2)
-			return true;
-		// if the three slopes are equal, the 4 points are collinear.
-		if (slope1 == slope2 && slope1 == slope3)
-			return true;
-
-		return false;
-	}
+//	private static boolean areCollinear(Point p1, Point p2, Point p3, Point p4) {
+//		double slope1 = p1.slopeTo(p2);
+//		double slope2 = p1.slopeTo(p3);
+//		double slope3 = p1.slopeTo(p4);
+//
+//		// if there are 3 equal points, then they must be linear
+//		if (slope1 == Double.NEGATIVE_INFINITY && slope2 == Double.NEGATIVE_INFINITY)
+//			return true;
+//		if (slope1 == Double.NEGATIVE_INFINITY && slope3 == Double.NEGATIVE_INFINITY)
+//			return true;
+//		if (slope2 == Double.NEGATIVE_INFINITY && slope3 == Double.NEGATIVE_INFINITY)
+//			return true;
+//		// if there are 2 equal points, one slope will be negative infinity
+//		if (slope1 == Double.NEGATIVE_INFINITY && slope2 == slope3)
+//			return true;
+//		if (slope2 == Double.NEGATIVE_INFINITY && slope1 == slope3)
+//			return true;
+//		if (slope3 == Double.NEGATIVE_INFINITY && slope1 == slope2)
+//			return true;
+//		// if the three slopes are equal, the 4 points are collinear.
+//		if (slope1 == slope2 && slope1 == slope3)
+//			return true;
+//
+//		return false;
+//	}
 }

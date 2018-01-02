@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
 
 public class CollinearTest {
 	public static void main(String[] args) {
@@ -25,10 +26,13 @@ public class CollinearTest {
 	    StdDraw.show();
 
 	    // print and draw the line segments
-	    BruteCollinearPoints collinear = new BruteCollinearPoints(points);
-//	    FastCollinearPoints collinear = new FastCollinearPoints(points);
-	    StdOut.println("Found "+collinear.numberOfSegments()+" collinear segments:");
-	    for (LineSegment segment : collinear.segments()) {
+//	    BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+	    Stopwatch sw = new Stopwatch();
+	    FastCollinearPoints collinear = new FastCollinearPoints(points);
+	    LineSegment[] ls = collinear.segments();
+	    StdOut.println("Collinear runs for "+sw.elapsedTime()+". "
+	    		+ "Found "+collinear.numberOfSegments()+" collinear segments:");
+	    for (LineSegment segment : ls) {
 	        StdOut.println(segment);
 	        segment.draw();
 	    }
