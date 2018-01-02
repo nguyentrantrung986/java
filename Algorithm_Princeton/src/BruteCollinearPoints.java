@@ -1,7 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 
 public class BruteCollinearPoints {
-	private Point[] points;
+	private final Point[] points;
 	private LineSegment[] arraySegments;
 
 	/**
@@ -18,13 +18,16 @@ public class BruteCollinearPoints {
 		for (int i = 0; i < points.length; i++) {
 			if (points[i] == null)
 				throw new IllegalArgumentException();
+		}
 
+		for (int i = 0; i < points.length; i++) {
 			for (int j = i + 1; j < points.length; j++)
 				if (points[i].compareTo(points[j]) == 0)
 					throw new IllegalArgumentException();
 		}
-
-		this.points = points;
+		
+		//clone to prevent the client to modify the array inside this object
+		this.points = points.clone();
 	}
 
 	public int numberOfSegments() {
@@ -99,7 +102,7 @@ public class BruteCollinearPoints {
 			this.arraySegments = arraySegments;
 		}
 
-		return arraySegments;
+		return arraySegments.clone();
 	}
 	
 	private class PointPair{
