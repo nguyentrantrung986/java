@@ -82,9 +82,10 @@ public class FastCollinearPoints {
 									// largest point of the collinear segment
 									max = aux[k];
 									isCollinear[k] = true;
-								}
-							} else
-								break;
+								}else
+									break;
+								
+							} 
 						}
 
 						// if max == null then the fourth point is not found
@@ -101,13 +102,13 @@ public class FastCollinearPoints {
 								 * the correct segment is always found first.
 								 */ 
 								if (max == pp.max)
-									if (slope1==pp.min.slopeTo(pp.max)) {
+									if (slope1==pp.slope) {
 										alreadyAdded = true;
 										break;
 									}
 							}
 							if (!alreadyAdded)
-								bagPointPairs.add(new PointPair(min, max));
+								bagPointPairs.add(new PointPair(min, max, slope1));
 						}
 					}
 				}
@@ -130,10 +131,12 @@ public class FastCollinearPoints {
 	private class PointPair {
 		Point min;
 		Point max;
+		double slope; //avoid recalculating slope
 
-		public PointPair(Point x, Point y) {
+		public PointPair(Point x, Point y, double slope) {
 			this.min = x;
 			this.max = y;
+			this.slope = slope;
 		}
 	}
 
