@@ -12,6 +12,11 @@ public class FastCollinearPoints {
 	 * constructor is null, if any point in the array is null, or if the
 	 * argument to the constructor contains a repeated point.
 	 * 
+	 * This algorithm removes points which have served as origin points from the subsequent arrays to be
+	 * sorted by slope order. Therefore, it has to check for subsegments in the result afterwards. This 
+	 * will be fast if there are not many subsegment such as in case of random points. But if there many 
+	 * subsegments such as in a grid, use the algorithm to include all points into slope-order arrays, so 
+	 * that the subsegments can be eliminated on the fly.
 	 * @param points:
 	 *            arrays of point objects
 	 */
@@ -75,10 +80,8 @@ public class FastCollinearPoints {
 							Point max = null;
 
 							for (int k = j + 2; k < aux.length; k++) {
-								// found the next collinear point{
-								Double slope3 = points[i].slopeTo(aux[k]);
-
-								if (slope1 == slope3) {
+								// found the next collinear point
+								if (slope1 == points[i].slopeTo(aux[k])) {
 									// due to natural order, max index holds the
 									// largest point of the collinear segment
 									max = aux[k];
@@ -143,43 +146,4 @@ public class FastCollinearPoints {
 			this.slope = slope;
 		}
 	}
-
-	/**
-	 * Test if 4 points are collinear. Take into consideration the equal points.
-	 * 
-	 * @param p1
-	 * @param p2
-	 * @param p3
-	 * @param p4
-	 * @return true if 4 points are collinear, false otherwise
-	 */
-	// private static boolean areCollinear(Point p1, Point p2, Point p3, Point
-	// p4) {
-	// double slope1 = p1.slopeTo(p2);
-	// double slope2 = p1.slopeTo(p3);
-	// double slope3 = p1.slopeTo(p4);
-	//
-	// // if there are 3 equal points, then they must be linear
-	// if (slope1 == Double.NEGATIVE_INFINITY && slope2 ==
-	// Double.NEGATIVE_INFINITY)
-	// return true;
-	// if (slope1 == Double.NEGATIVE_INFINITY && slope3 ==
-	// Double.NEGATIVE_INFINITY)
-	// return true;
-	// if (slope2 == Double.NEGATIVE_INFINITY && slope3 ==
-	// Double.NEGATIVE_INFINITY)
-	// return true;
-	// // if there are 2 equal points, one slope will be negative infinity
-	// if (slope1 == Double.NEGATIVE_INFINITY && slope2 == slope3)
-	// return true;
-	// if (slope2 == Double.NEGATIVE_INFINITY && slope1 == slope3)
-	// return true;
-	// if (slope3 == Double.NEGATIVE_INFINITY && slope1 == slope2)
-	// return true;
-	// // if the three slopes are equal, the 4 points are collinear.
-	// if (slope1 == slope2 && slope1 == slope3)
-	// return true;
-	//
-	// return false;
-	// }
 }

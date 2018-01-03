@@ -30,7 +30,7 @@ public class CollinearTest {
 	    Stopwatch sw = new Stopwatch();
 	    FastCollinearPoints collinear = new FastCollinearPoints(points);
 	    LineSegment[] ls = collinear.segments();
-	    StdOut.println("Collinear runs for "+sw.elapsedTime()+". "
+	    StdOut.println("Collinear runs for "+sw.elapsedTime()+" seconds. "
 	    		+ "Found "+collinear.numberOfSegments()+" collinear segments:");
 	    for (LineSegment segment : ls) {
 	        StdOut.println(segment);
