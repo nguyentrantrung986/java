@@ -14,25 +14,23 @@ public class ThreeWayPartition extends ElementarySort {
 		int gt = hi;
 		Comparable v = a[lo];
 
-		while (true) {
+		while (i<=gt) {
 			if (less(a[i], v))
 				exchange(a, i++, lt++);
 			else if (less(v, a[i]))
 				exchange(a, i, gt--);
-			else if (v.equals(a[i]))
-				i++;
-			if (i >= gt)
-				break;			
+			else 
+				i++;	
 		}
 
 		sort(a, lo, lt - 1);
-		sort(a, lt + 1, hi);
+		sort(a, gt+1, hi);
 	}
 
 	// unit testing
 	public static void main(String[] args) {
-		Integer[] a = { 2148, 9058, 7742, 3153, 6324, 609, 7628, 5469, 7017, 504 };
-//		Integer[] a = getIntegerTestData("test\\integerRandomOrder.txt");
+//		Integer[] a = { 2148, 9058, 7742, 3153, 6324, 609, 7628, 5469, 7017, 504 };
+		Integer[] a = getIntegerTestData("test\\integerRandomOrder.txt");
 		Stopwatch timer1 = new Stopwatch();
 		ThreeWayPartition.sort(a,0,a.length-1);
 		StdOut.println("Three way partitioning runs for " + timer1.elapsedTime() + " seconds");
