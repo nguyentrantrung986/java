@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
 class Board {
 	private int[][] blocks;
 	private int n; // size of the block array
@@ -9,8 +12,8 @@ class Board {
 	// construct a board from an n-by-n array of blocks
 	// (where blocks[i][j] = block in row i, column j)
 	public Board(int[][] blocks) {
-		this.blocks = blocks.clone();
 		this.n = blocks.length;
+		this.blocks = copy(blocks);
 		this.hamming = -1;
 		this.manhattan = -1;
 	}
@@ -95,7 +98,7 @@ class Board {
 			}
 		}
 
-		int[][] tmp = blocks.clone();
+		int[][] tmp = copy(blocks);
 
 		if (blankRow > 0) { // swap the blank block with the block 1 row above
 			swap(tmp, blankRow, blankCol, blankRow - 1, blankCol);
@@ -104,29 +107,80 @@ class Board {
 
 		if (blankCol > 0) { // swap the blank block with the block on the left
 			// undo to reuse, constructor will clone
-			if (blankRow > 0) swap(tmp, blankRow, blankCol, blankRow - 1, blankCol); 
+			if (blankRow > 0)
+				swap(tmp, blankRow, blankCol, blankRow - 1, blankCol);
 			swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
 			alB.add(new Board(tmp));
 		}
-		
-		if (blankRow < n - 1){ // swap the blank block with the block 1 row below
-			if (blankCol > 0) swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
+
+		if (blankRow < n - 1) { // swap the blank block with the block 1 row
+								// below
+			if (blankCol > 0)
+				swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
 			swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
 			alB.add(new Board(tmp));
 		}
-		
-		if (blankCol < n - 1){	// swap the blank block with the block on the right
-			if (blankRow < n - 1) swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
+
+		if (blankCol < n - 1) { // swap the blank block with the block on the
+								// right
+			if (blankRow < n - 1)
+				swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
 			swap(tmp, blankRow, blankCol, blankRow, blankCol + 1);
-			alB.add(new Board(tmp));			
+			alB.add(new Board(tmp));
 		}
 
 		return alB;
+	}
+
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append(n);
+		result.append(System.getProperty("line.separator"));
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				result.append(String.format(" %1$2s",blocks[i][j]));
+			}
+			result.append(System.getProperty("line.separator"));
+		}
+
+		return result.toString();
 	}
 
 	private void swap(int[][] a, int row1, int col1, int row2, int col2) {
 		int tmp = a[row1][col1];
 		a[row1][col1] = a[row2][col2];
 		a[row2][col2] = tmp;
+	}
+	
+	private int[][] copy(int[][] a){
+		int[][] c = new int[a.length][]; 
+		for (int i = 0; i < a.length; i++) {
+			c[i] = new int[a[i].length];
+			for (int j = 0; j < a[i].length; j++) {
+				c[i][j] = a[i][j];
+			}
+		}
+		
+		return c;
+	}
+	
+	public static void main(String[] args) {
+
+	    // create initial board from file
+	    In in = new In(args[0]);
+	    int n = in.readInt();
+	    int[][] blocks = new int[n][n];
+	    for (int i = 0; i < n; i++)
+	        for (int j = 0; j < n; j++)
+	            blocks[i][j] = in.readInt();
+	    Board initial = new Board(blocks);
+	    
+	    StdOut.println(initial.toString());
+	    
+	    Iterable<Board> ib = initial.neighbors();
+	    for(Board b:ib){
+	    	StdOut.println(b.toString());
+	    }
 	}
 }
