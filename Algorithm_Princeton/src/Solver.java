@@ -68,6 +68,9 @@ public class Solver {
 		@Override
 		public int compareTo(SearchNode that) {
 			int priority = (moveCount + board.manhattan()) - (that.moveCount + that.board.manhattan());
+//			
+//			if(priority==0)
+//				return board.hamming() - that.board.hamming();
 			
 			return priority;
 		}

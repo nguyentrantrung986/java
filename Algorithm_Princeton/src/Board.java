@@ -14,8 +14,8 @@ class Board {
 	public Board(int[][] blocks) {
 		this.n = blocks.length;
 		this.blocks = copy(blocks);
-		this.hamming = -1;
-		this.manhattan = -1;
+		calculateHamming();
+		calculateManhattan();
 	}
 
 	public int dimension() { // board dimension n
@@ -23,39 +23,11 @@ class Board {
 	}
 
 	public int hamming() { // number of blocks out of place
-		if (this.hamming == -1) {
-			int outOfPlace = 0;
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					if (blocks[i][j] != i * n + j + 1)
-						outOfPlace++;
-				}
-			}
-			hamming = outOfPlace;
-		}
-
 		return hamming;
 	}
 
 	// sum of Manhattan distances between blocks and goal
 	public int manhattan() {
-		if (manhattan == -1) {
-			int tDistance = 0;
-			int row, col;
-
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					if (blocks[i][j] != 0) {
-						row = (blocks[i][j] - 1) / n;
-						col = (blocks[i][j] - 1) % n;
-						tDistance += Math.abs(row - i) + Math.abs(col - j);
-					}
-				}
-			}
-
-			manhattan = tDistance;
-		}
-
 		return manhattan;
 	}
 
@@ -164,6 +136,34 @@ class Board {
 
 		return c;
 	}
+	
+	private void calculateHamming(){
+		int outOfPlace = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (blocks[i][j] !=0 && blocks[i][j] != i * n + j + 1)
+					outOfPlace++;
+			}
+		}
+		hamming = outOfPlace;
+	}
+	
+	private void calculateManhattan(){
+		int tDistance = 0;
+		int row, col;
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (blocks[i][j] != 0) {
+					row = (blocks[i][j] - 1) / n;
+					col = (blocks[i][j] - 1) % n;
+					tDistance += Math.abs(row - i) + Math.abs(col - j);
+				}
+			}
+		}
+
+		manhattan = tDistance;
+	}
 
 	public static void main(String[] args) {
 
@@ -177,12 +177,12 @@ class Board {
 		Board initial = new Board(blocks);
 
 		StdOut.println(initial.toString());
-		StdOut.println("Manhattan: " + initial.manhattan());
+		StdOut.println("hamming: " + initial.hamming());
 		StdOut.println("Neighbors:");
 		Iterable<Board> ib = initial.neighbors();
 		for (Board b : ib) {
 			StdOut.println(b.toString());
-			StdOut.println("Manhattan: " + b.manhattan());
+			StdOut.println("Hamming: " + b.hamming());
 		}
 	}
 }
