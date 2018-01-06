@@ -19,7 +19,7 @@ class Board {
 	}
 
 	public int dimension() { // board dimension n
-		return blocks.length;
+		return n;
 	}
 
 	public int hamming() { // number of blocks out of place
@@ -47,7 +47,7 @@ class Board {
 					int row = blocks[i][j] / n;
 					int col = blocks[i][j] % n;
 
-					tDistance = (row - i) + (col - j);
+					tDistance = Math.abs(row - i) + Math.abs(col - j);
 				}
 			}
 
@@ -61,7 +61,8 @@ class Board {
 	public boolean isGoal() {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				if (blocks[i][j] != i * n + j + 1)
+				int val = (i==n-1&&j==n-1)?0:(i*n + j + 1); //last block should be 0
+				if (blocks[i][j] != val)
 					return false;
 			}
 		}
@@ -72,7 +73,7 @@ class Board {
 	// a board obtained by exchanging any pair of blocks, e.g. the first 2
 	public Board twin() {
 		if (n > 1) {
-			int[][] twinBlock = blocks.clone();
+			int[][] twinBlock = copy(blocks);
 			swap(twinBlock, 0, 0, 0, 1);
 
 			return new Board(twinBlock);
@@ -177,7 +178,8 @@ class Board {
 	    Board initial = new Board(blocks);
 	    
 	    StdOut.println(initial.toString());
-	    
+	    StdOut.println("Manhattan: "+initial.manhattan());
+	    StdOut.println("Neighbors:");
 	    Iterable<Board> ib = initial.neighbors();
 	    for(Board b:ib){
 	    	StdOut.println(b.toString());
