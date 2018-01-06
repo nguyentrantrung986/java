@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
-class Board {
+public class Board {
 	private int[][] blocks;
 	private int n; // size of the block array
 	private int hamming;
@@ -57,6 +57,9 @@ class Board {
 	}
 
 	public boolean equals(Object y) {
+		if(y==null)
+			return false;
+		
 		return y.toString().equals(this.toString());
 	}
 

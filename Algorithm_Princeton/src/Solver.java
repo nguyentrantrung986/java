@@ -6,13 +6,12 @@ import edu.princeton.cs.algs4.Stopwatch;
 
 public class Solver {
 	private int moves;
-	private MinPQ<SearchNode> minPQ;
 	private Stack<Board> solution;
 
 	public Solver(Board initial) {
 		if(initial == null) throw new java.lang.IllegalArgumentException();
 		
-		minPQ = new MinPQ<SearchNode>();
+		MinPQ<SearchNode> minPQ = new MinPQ<SearchNode>();
 		minPQ.insert(new SearchNode(initial, null, 0));
 		Stack<Board> exploredBoard = new Stack<>();
 		moves = -1;
@@ -38,7 +37,7 @@ public class Solver {
 			do{
 				solution.push(currentNode.board);
 				currentNode = currentNode.prevNode;
-			}while(currentNode.prevNode != null);
+			}while(currentNode != null);
 		}
 	}
 	
