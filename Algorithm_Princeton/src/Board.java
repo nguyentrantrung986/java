@@ -184,6 +184,7 @@ public class Board {
 
 		StdOut.println(initial.toString());
 		StdOut.println("hamming: " + initial.hamming());
+		StdOut.println("manhattan: " + initial.manhattan());
 		StdOut.println("Neighbors:");
 		Iterable<Board> ib = initial.neighbors();
 		for (Board b : ib) {
