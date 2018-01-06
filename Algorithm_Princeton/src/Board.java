@@ -63,11 +63,8 @@ class Board {
 	public boolean isGoal() {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				int val = (i == n - 1 && j == n - 1) ? 0 : (i * n + j + 1); // last
-																			// block
-																			// should
-																			// be
-																			// 0
+				//last block should be 0
+				int val = (i == n - 1 && j == n - 1) ? 0 : (i * n + j + 1); 
 				if (blocks[i][j] != val)
 					return false;
 			}
@@ -110,28 +107,24 @@ class Board {
 		if (blankRow > 0) { // swap the blank block with the block 1 row above
 			swap(tmp, blankRow, blankCol, blankRow - 1, blankCol);
 			alB.add(new Board(tmp));
+			swap(tmp, blankRow, blankCol, blankRow - 1, blankCol);
 		}
 
 		if (blankCol > 0) { // swap the blank block with the block on the left
-			// undo to reuse, constructor will clone
-			if (blankRow > 0)
-				swap(tmp, blankRow, blankCol, blankRow - 1, blankCol);
 			swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
 			alB.add(new Board(tmp));
+			swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
 		}
 
 		if (blankRow < n - 1) { // swap the blank block with the block 1 row
 								// below
-			if (blankCol > 0)
-				swap(tmp, blankRow, blankCol, blankRow, blankCol - 1);
 			swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
 			alB.add(new Board(tmp));
+			swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
 		}
 
 		if (blankCol < n - 1) { // swap the blank block with the block on the
 								// right
-			if (blankRow < n - 1)
-				swap(tmp, blankRow, blankCol, blankRow + 1, blankCol);
 			swap(tmp, blankRow, blankCol, blankRow, blankCol + 1);
 			alB.add(new Board(tmp));
 		}

@@ -4,13 +4,13 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
-	private final Board initial;
 	private int moves;
 	private MinPQ<SearchNode> minPQ;
 	private Queue<Board> solution;
 
 	public Solver(Board initial) {
-		this.initial = initial;
+		if(initial == null) throw new java.lang.IllegalArgumentException();
+		
 		minPQ = new MinPQ<SearchNode>();
 		minPQ.insert(new SearchNode(initial, null, 0));
 		solution = new Queue<>();
@@ -78,10 +78,12 @@ public class Solver {
 	    // print solution to standard output
 	    if (!solver.isSolvable())
 	        StdOut.println("No solution possible");
-	    else {
-	        StdOut.println("Minimum number of moves = " + solver.moves());
-	        for (Board board : solver.solution())
+	    else {	        
+	        for (Board board : solver.solution()){
 	            StdOut.println(board);
+	        	StdOut.println("Manhattan: " + board.manhattan());
+	        }
+	        StdOut.println("Minimum number of moves = " + solver.moves());
 	    }
 	}
 }
