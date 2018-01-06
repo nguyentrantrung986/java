@@ -1,26 +1,26 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
 
 public class Solver {
 	private int moves;
 	private MinPQ<SearchNode> minPQ;
-	private Queue<Board> solution;
+	private Stack<Board> solution;
 
 	public Solver(Board initial) {
 		if(initial == null) throw new java.lang.IllegalArgumentException();
 		
 		minPQ = new MinPQ<SearchNode>();
 		minPQ.insert(new SearchNode(initial, null, 0));
-		solution = new Queue<>();
+		Stack<Board> exploredBoard = new Stack<>();
 		moves = -1;
 
 		SearchNode currentNode;
 		do {
 			currentNode = minPQ.delMin();
-			solution.enqueue(currentNode.board);
-			moves++;
+			exploredBoard.push(currentNode.board);
 
 			Iterable<Board> neighbors = currentNode.board.neighbors();
 			for (Board b : neighbors) {
@@ -30,10 +30,20 @@ public class Solver {
 					minPQ.insert(new SearchNode(b, currentNode, currentNode.moveCount + 1));
 			}
 		} while (!currentNode.board.isGoal());
+		
+		if(currentNode.board.isGoal()){
+			moves=currentNode.moveCount;
+			solution = new Stack<>();
+			
+			do{
+				solution.push(currentNode.board);
+				currentNode = currentNode.prevNode;
+			}while(currentNode.prevNode != null);
+		}
 	}
 	
 	public boolean isSolvable() {
-		return true;
+		return !(solution==null);
 	}
 	
 	public int moves() {
@@ -57,7 +67,9 @@ public class Solver {
 
 		@Override
 		public int compareTo(SearchNode that) {
-			return (moveCount + board.manhattan()) - (that.moveCount + that.board.manhattan());
+			int priority = (moveCount + board.manhattan()) - (that.moveCount + that.board.manhattan());
+			
+			return priority;
 		}
 	}
 	
@@ -73,8 +85,10 @@ public class Solver {
 	    Board initial = new Board(blocks);
 
 	    // solve the puzzle
+	    Stopwatch sw = new Stopwatch();
 	    Solver solver = new Solver(initial);
-
+	    StdOut.println("Solved in "+sw.elapsedTime()+" seconds");
+	    
 	    // print solution to standard output
 	    if (!solver.isSolvable())
 	        StdOut.println("No solution possible");
