@@ -41,13 +41,15 @@ class Board {
 	public int manhattan() {
 		if (manhattan == -1) {
 			int tDistance = 0;
+			int row, col;
 
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < n; j++) {
-					int row = blocks[i][j] / n;
-					int col = blocks[i][j] % n;
-
-					tDistance = Math.abs(row - i) + Math.abs(col - j);
+					if (blocks[i][j] != 0) {
+						row = (blocks[i][j] - 1) / n;
+						col = (blocks[i][j] - 1) % n;
+						tDistance += Math.abs(row - i) + Math.abs(col - j);
+					}
 				}
 			}
 
@@ -61,7 +63,11 @@ class Board {
 	public boolean isGoal() {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				int val = (i==n-1&&j==n-1)?0:(i*n + j + 1); //last block should be 0
+				int val = (i == n - 1 && j == n - 1) ? 0 : (i * n + j + 1); // last
+																			// block
+																			// should
+																			// be
+																			// 0
 				if (blocks[i][j] != val)
 					return false;
 			}
@@ -140,7 +146,7 @@ class Board {
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				result.append(String.format(" %1$2s",blocks[i][j]));
+				result.append(String.format(" %1$2s", blocks[i][j]));
 			}
 			result.append(System.getProperty("line.separator"));
 		}
@@ -153,36 +159,37 @@ class Board {
 		a[row1][col1] = a[row2][col2];
 		a[row2][col2] = tmp;
 	}
-	
-	private int[][] copy(int[][] a){
-		int[][] c = new int[a.length][]; 
+
+	private int[][] copy(int[][] a) {
+		int[][] c = new int[a.length][];
 		for (int i = 0; i < a.length; i++) {
 			c[i] = new int[a[i].length];
 			for (int j = 0; j < a[i].length; j++) {
 				c[i][j] = a[i][j];
 			}
 		}
-		
+
 		return c;
 	}
-	
+
 	public static void main(String[] args) {
 
-	    // create initial board from file
-	    In in = new In(args[0]);
-	    int n = in.readInt();
-	    int[][] blocks = new int[n][n];
-	    for (int i = 0; i < n; i++)
-	        for (int j = 0; j < n; j++)
-	            blocks[i][j] = in.readInt();
-	    Board initial = new Board(blocks);
-	    
-	    StdOut.println(initial.toString());
-	    StdOut.println("Manhattan: "+initial.manhattan());
-	    StdOut.println("Neighbors:");
-	    Iterable<Board> ib = initial.neighbors();
-	    for(Board b:ib){
-	    	StdOut.println(b.toString());
-	    }
+		// create initial board from file
+		In in = new In(args[0]);
+		int n = in.readInt();
+		int[][] blocks = new int[n][n];
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				blocks[i][j] = in.readInt();
+		Board initial = new Board(blocks);
+
+		StdOut.println(initial.toString());
+		StdOut.println("Manhattan: " + initial.manhattan());
+		StdOut.println("Neighbors:");
+		Iterable<Board> ib = initial.neighbors();
+		for (Board b : ib) {
+			StdOut.println(b.toString());
+			StdOut.println("Manhattan: " + b.manhattan());
+		}
 	}
 }
