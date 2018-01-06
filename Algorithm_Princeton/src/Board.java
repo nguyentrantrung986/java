@@ -45,11 +45,14 @@ public class Board {
 		return true;
 	}
 
-	// a board obtained by exchanging any pair of blocks, e.g. the first 2
+	// a board obtained by exchanging any pair of non-empty blocks
 	public Board twin() {
 		if (n > 1) {
 			int[][] twinBlock = copy(blocks);
-			swap(twinBlock, 0, 0, 0, 1);
+			if(twinBlock[0][0]!=0 && twinBlock[0][1]!=0)
+				swap(twinBlock, 0, 0, 0, 1);
+			else 
+				swap(twinBlock, 1, 0, 1, 1);
 
 			return new Board(twinBlock);
 		} else
@@ -187,5 +190,8 @@ public class Board {
 			StdOut.println(b.toString());
 			StdOut.println("Hamming: " + b.hamming());
 		}
+		
+		StdOut.println("Twin:");
+		StdOut.println(initial.twin());
 	}
 }
