@@ -63,12 +63,14 @@ public class Solver {
 		private Board board;
 		private final int moveCount;
 		private final int priority;
+		private final int boardManhattan;
 
 		public SearchNode(Board currentB, SearchNode prevNode, int moveCount) {
 			this.board = currentB;
 			this.prevNode = prevNode;
 			this.moveCount = moveCount;
-			this.priority = moveCount + board.manhattan();
+			this.boardManhattan = board.manhattan();
+			this.priority = moveCount + boardManhattan;
 		}
 
 		@Override
@@ -76,7 +78,7 @@ public class Solver {
 			int priorityDiff = this.priority - that.priority;
 			//break ties with manhattan
 			 if(priorityDiff==0)
-			 return board.manhattan() - that.board.manhattan();
+			 return boardManhattan - that.boardManhattan;
 
 			return priorityDiff;
 		}
