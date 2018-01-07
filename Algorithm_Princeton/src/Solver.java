@@ -23,8 +23,8 @@ public class Solver {
 
 			Iterable<Board> neighbors = currentNode.board.neighbors();
 			for (Board b : neighbors) {
-				// don't enqueue a neighbor if its board is the same as the
-				// board of the predecessor search node.
+				// don't enqueue a neighbor if its Board is the same as the
+				// Board of the predecessor search node.
 				if (currentNode.prevNode == null || !b.equals(currentNode.prevNode.board))
 					minPQ.insert(new SearchNode(b, currentNode, currentNode.moveCount + 1));
 			}
@@ -38,7 +38,7 @@ public class Solver {
 			currentNode = currentNode.prevNode;
 		} while (currentNode != null);
 
-		//if the first board is the twin, the initial is not solvable
+		//if the first Board is the twin, the initial is not solvable
 		Board firstBoard = solution.peek();
 		if (!firstBoard.equals(initial)) {
 			moves = -1;
@@ -74,9 +74,9 @@ public class Solver {
 		@Override
 		public int compareTo(SearchNode that) {
 			int priorityDiff = this.priority - that.priority;
-			//
-			// if(priority==0)
-			// return board.hamming() - that.board.hamming();
+			//break ties with manhattan
+			 if(priorityDiff==0)
+			 return board.manhattan() - that.board.manhattan();
 
 			return priorityDiff;
 		}
@@ -84,7 +84,7 @@ public class Solver {
 
 	public static void main(String[] args) {
 
-		// create initial board from file
+		// create initial Board from file
 		In in = new In(args[0]);
 		int n = in.readInt();
 		int[][] blocks = new int[n][n];
@@ -102,9 +102,9 @@ public class Solver {
 		if (!solver.isSolvable())
 			StdOut.println("No solution possible");
 		else {
-			for (Board board : solver.solution()) {
-				StdOut.println(board);
-				StdOut.println("Manhattan: " + board.manhattan());
+			for (Board Board : solver.solution()) {
+				StdOut.println(Board);
+				StdOut.println("Manhattan: " + Board.manhattan());
 			}
 			StdOut.println("Minimum number of moves = " + solver.moves());
 		}
