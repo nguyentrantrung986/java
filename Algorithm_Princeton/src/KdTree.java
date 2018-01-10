@@ -32,6 +32,7 @@ public class KdTree {
 		if(root == null){
 			root = new Node(p);
 			root.rect = new RectHV(0, 0, 1, 1);
+			root.dividedBy = DX;
 		}else
 			insert(root, new Node(p), 0);
 	}
@@ -48,7 +49,7 @@ public class KdTree {
 		}
 
 		int compare = parent.compareTo(newNode);
-		if (compare < 0) {
+		if (compare > 0) {
 			parent.lb = insert(parent.lb, newNode, depth + 1);
 
 			if (parent.lb.rect == null) {
@@ -56,11 +57,13 @@ public class KdTree {
 				double ymax = (parent.dividedBy == DX) ? parent.rect.ymax() : parent.p.y();
 				parent.lb.rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), xmax, ymax);
 			}
-		} else if (compare > 0) {
+		} else if (compare < 0) {
 			parent.rt = insert(parent.rt, newNode, depth + 1);
 
 			if (parent.rt.rect == null) {
-				parent.rt.rect = new RectHV(parent.p.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
+				double xmin = (parent.dividedBy == DX) ? parent.p.x() : parent.rect.xmin();
+				double ymin = (parent.dividedBy == DX) ? parent.rect.ymin() : parent.p.y();
+				parent.rt.rect = new RectHV(xmin, ymin, parent.rect.xmax(), parent.rect.ymax());
 			}
 		}
 
@@ -85,7 +88,7 @@ public class KdTree {
 		}else{
 			StdDraw.setPenColor(StdDraw.BLUE);
 			StdDraw.setPenRadius(0.003);
-			StdDraw.line(x.rect.xmin(),x.p.y(), x.rect.ymin(), x.p.y());
+			StdDraw.line(x.rect.xmin(),x.p.y(), x.rect.xmax(), x.p.y());
 		}
 		draw(x.lb);
 		draw(x.rt);
@@ -122,7 +125,7 @@ public class KdTree {
 
 		@Override
 		public int compareTo(Node that) {
-			if (dividedBy == DX) {
+			if (this.dividedBy == DX) {
 				if (this.p.x() > that.p.x())
 					return 1;
 				else if (this.p.x() < that.p.x())
@@ -140,9 +143,11 @@ public class KdTree {
 
 	public static void main(String[] args) {
 		KdTree kdt = new KdTree();
-		kdt.insert(new Point2D(0.4, 0.3));
-		kdt.insert(new Point2D(0.3, 0.7));
-		kdt.insert(new Point2D(0.8, 0.6));
+		kdt.insert(new Point2D(0.7, 0.2));
+		kdt.insert(new Point2D(0.5, 0.4));
+		kdt.insert(new Point2D(0.2, 0.3));
+		kdt.insert(new Point2D(0.4, 0.7));
+		kdt.insert(new Point2D(0.9, 0.6));
 
 		System.out.println(kdt.contains(new Point2D(0.01, 0.7)));
 		System.out.println(kdt.size());
