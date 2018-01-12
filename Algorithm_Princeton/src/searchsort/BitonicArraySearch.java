@@ -1,4 +1,4 @@
-package exercises;
+package searchsort;
 
 public class BitonicArraySearch {
 	public boolean bitonicSearch(int[] array, int x) {

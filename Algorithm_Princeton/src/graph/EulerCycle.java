@@ -11,7 +11,7 @@
  * following unused edges until returning to u, and join the tour formed in this
  * way to the previous tour.
  **/
-package exercises;
+package graph;
 
 import java.util.ArrayList;
 import edu.princeton.cs.algs4.Graph;

@@ -1,4 +1,4 @@
-package exercises;
+package searchsort;
 
 /**
  * Java autoboxing and equals(). Consider two double values a and b and their

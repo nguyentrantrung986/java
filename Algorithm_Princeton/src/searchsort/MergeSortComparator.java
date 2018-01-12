@@ -1,4 +1,4 @@
-package exercises;
+package searchsort;
 
 import java.util.Comparator;
 

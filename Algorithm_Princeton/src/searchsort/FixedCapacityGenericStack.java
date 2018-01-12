@@ -1,4 +1,4 @@
-package exercises;
+package searchsort;
 
 public class FixedCapacityGenericStack<Item> {
 	private Item[] s;
