@@ -9,6 +9,7 @@ public class BFS {
 	private int furthest;
 	private boolean[] marked;
 	private int[] comeFrom;
+	private int[] dist;
 	
 	public BFS(Graph g, int s){
 		this.g = g;
@@ -31,12 +32,7 @@ public class BFS {
 	 * @return number of edges from the starting point to this point v
 	 */
 	public int distanceToStart(int v){
-		int dis = 0;
-		while(v!=s){
-			v = comeFrom[v];
-			dis++;
-		}
-		return dis;
+		return dist[v];
 	}
 	
 	public int[] minPathToStart(int v){
@@ -53,7 +49,9 @@ public class BFS {
 	private int bfs(int v) {
 		marked = new boolean[g.V()];
 		comeFrom = new int[g.V()];
+		dist = new int[g.V()];
 		
+		//q contains vertices yet to be visited
 		Queue<Integer> q = new Queue<>();
 		q.enqueue(v);
 		marked[v] = true;
@@ -66,6 +64,9 @@ public class BFS {
 				if (!marked[n]) {
 					marked[n] = true;
 					comeFrom[n] = last;
+					//calculate distance to the source on the fly by incrementing distance 
+					//compared to last vertex where it comes from
+					dist[n] = dist[last] + 1;
 					q.enqueue(n);
 				}
 			}
