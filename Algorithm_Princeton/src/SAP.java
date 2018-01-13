@@ -8,20 +8,28 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
 	private final Digraph g;
+	//first 2 indices cache the last 2 vertices, common ancestor at index 2, sad at index 3
+	private int[] cache;
 
 	// constructor takes a digraph (not necessarily a DAG)
 	public SAP(Digraph G) {
 		if (G == null)
 			throw new java.lang.IllegalArgumentException();
 		this.g = new Digraph(G);
+		cache = new int[4];
+		for(int i =0; i< 4; i++)
+			cache[i] = -9;
 	}
 
 	// length of shortest ancestral path between v and w; -1 if no such path
 	public int length(int v, int w) {
 		if (v < 0 || w < 0 || v > g.V() - 1 || w > g.V() - 1)
 			throw new java.lang.IllegalArgumentException();
+		if(v==cache[0] && w==cache[1] || v==cache[1] && w==cache[0])
+			return cache[3];
+		
 		int[] result = closestCommonAncestor(v, w);
-
+		cacheResults(v, w, result[0], result[1]);
 		return result[1];
 	}
 
@@ -30,8 +38,11 @@ public class SAP {
 	public int ancestor(int v, int w) {
 		if (v < 0 || w < 0 || v > g.V() - 1 || w > g.V() - 1)
 			throw new java.lang.IllegalArgumentException();
+		if(v==cache[0] && w==cache[1] || v==cache[1] && w==cache[0])
+			return cache[2];
+		
 		int[] result = closestCommonAncestor(v, w);
-
+		cacheResults(v, w, result[0], result[1]);
 		return result[0];
 	}
 
@@ -135,6 +146,8 @@ public class SAP {
 
 		while (!q.isEmpty()) {
 			int last = q.dequeue();
+			if(distFromW[last] > sad) break; //no closer common ancestor can be found
+			
 			for (int p : g.adj(last)) {
 				if (!wMarked[p]) {
 					wMarked[p] = true;
@@ -159,6 +172,13 @@ public class SAP {
 		}
 
 		return results;
+	}
+	
+	private void cacheResults(int v, int w, int ancestor, int sad){
+		cache[0] = v;
+		cache[1] = w;
+		cache[2] = ancestor;
+		cache[3] = sad;
 	}
 
 	//unit testing
