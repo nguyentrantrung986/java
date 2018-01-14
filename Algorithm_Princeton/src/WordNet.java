@@ -5,11 +5,11 @@ import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdIn;
 
 public class WordNet {
-	//find IDs of syn-sets containing specific words
-	private RedBlackBST<String, SET<Integer>> synDict; 
-	//find the syn-set given its ID
-	private RedBlackBST<Integer, String> synSetDict;
-	private SAP grapHypernyms;
+	// find IDs of syn-sets containing specific words
+	private final RedBlackBST<String, SET<Integer>> synDict;
+	// find the syn-set given its ID
+	private final RedBlackBST<Integer, String> synSetDict;
+	private final SAP grapHypernyms;
 
 	// constructor takes the name of the two input files
 	public WordNet(String synsets, String hypernyms) {
@@ -45,18 +45,18 @@ public class WordNet {
 		if (!synDict.contains(nounB) || !synDict.contains(nounA))
 			throw new java.lang.IllegalArgumentException();
 		int ancestor = grapHypernyms.ancestor(synDict.get(nounA), synDict.get(nounB));
-		
+
 		return synSetDict.get(ancestor);
-		
+
 	}
 
 	private int readSynsets(String synsetsFile) {
 		In in = new In(synsetsFile);
 		int lineCount = 0;
 		while (!in.isEmpty()) {
-			String l = in.readLine();
+			String line = in.readLine();
 			lineCount++;
-			String[] tokens = l.split(",");
+			String[] tokens = line.split(",");
 			int synsetId = Integer.parseInt(tokens[0]);
 			synSetDict.put(synsetId, tokens[1]);
 			String[] words = tokens[1].split(" ");
@@ -79,8 +79,8 @@ public class WordNet {
 	private void readHypernyms(String hypernyms, Digraph g) {
 		In in = new In(hypernyms);
 		while (!in.isEmpty()) {
-			String l = in.readLine();
-			String[] tokens = l.split(",");
+			String line = in.readLine();
+			String[] tokens = line.split(",");
 			int thisSetId = Integer.parseInt(tokens[0]);
 			for (int i = 1; i < tokens.length; i++) {
 				int parentSetId = Integer.parseInt(tokens[i]);

@@ -245,13 +245,13 @@ public class SAP {
 		g2.enqueue(12);
 		g2.enqueue(2);
 		g2.enqueue(6);
-		int l = sap.length(g1, g2);
+		int length = sap.length(g1, g2);
 		int a = sap.ancestor(g1, g2);
-		StdOut.printf("Group length = %d, group ancestor = %d\n", l, a);
+		StdOut.printf("Group length = %d, group ancestor = %d\n", length, a);
 		while (!StdIn.isEmpty()) {
 			int v = StdIn.readInt();
 			int w = StdIn.readInt();
-			int length = sap.length(v, w);
+			length = sap.length(v, w);
 			int ancestor = sap.ancestor(v, w);
 			StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
 		}
