@@ -1,5 +1,6 @@
 package graph;
 
+import edu.princeton.cs.algs4.DepthFirstOrder;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.KosarajuSharirSCC;
@@ -40,6 +41,8 @@ public class KosarajuTest {
 	            }
 	            StdOut.println();
 	        }
-
+	        
+	        DepthFirstOrder dfo = new DepthFirstOrder(G);
+	        System.out.println(dfo.reversePost());
 	    }
 }

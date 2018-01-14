@@ -22,8 +22,6 @@ public class SAP {
 
 	// length of shortest ancestral path between v and w; -1 if no such path
 	public int length(int v, int w) {
-		if (v < 0 || w < 0 || v > g.V() - 1 || w > g.V() - 1)
-			throw new java.lang.IllegalArgumentException();
 		if (v == cache[0] && w == cache[1] || v == cache[1] && w == cache[0])
 			return cache[3];
 
@@ -35,8 +33,6 @@ public class SAP {
 	// a common ancestor of v and w that participates in a shortest ancestral
 	// path; -1 if no such path
 	public int ancestor(int v, int w) {
-		if (v < 0 || w < 0 || v > g.V() - 1 || w > g.V() - 1)
-			throw new java.lang.IllegalArgumentException();
 		if (v == cache[0] && w == cache[1] || v == cache[1] && w == cache[0])
 			return cache[2];
 
@@ -74,6 +70,16 @@ public class SAP {
 	private int[] closestCommonAncestor(Iterable<Integer> v, Iterable<Integer> w) {
 		if (v == null || w == null)
 			throw new java.lang.IllegalArgumentException();
+		
+		for(int i:v){
+			if(i<0 || i>g.V()-1)
+				throw new java.lang.IllegalArgumentException();
+		}
+		
+		for(int i:w){
+			if(i<0 || i>g.V()-1)
+				throw new java.lang.IllegalArgumentException();
+		}
 
 		int sad = Integer.MAX_VALUE;
 		int sa = -1;
@@ -157,6 +163,9 @@ public class SAP {
 	 *         -1 if no such path
 	 */
 	private int[] closestCommonAncestor(int v, int w) {
+		if (v < 0 || w < 0 || v > g.V() - 1 || w > g.V() - 1)
+			throw new java.lang.IllegalArgumentException();
+		
 		int sad = Integer.MAX_VALUE;
 		int sa = -1;
 

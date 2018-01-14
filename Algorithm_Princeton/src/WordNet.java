@@ -19,8 +19,8 @@ public class WordNet {
 
 		Digraph g = new Digraph(setCount);
 		readHypernyms(hypernyms, g);
-		checkCycle(g);
 		checkRootedDAG(g);
+		//checkRootedDAG(g);
 		grapHypernyms = new SAP(g);
 	}
 
@@ -91,41 +91,26 @@ public class WordNet {
 		}
 	}
 
-	private void checkCycle(Digraph g) {
+	private void checkRootedDAG(Digraph g) {
 		boolean[] onStack = new boolean[g.V()];
 		boolean[] marked = new boolean[g.V()];
+		int outDegree0Count = 0;
 
 		for (int i = 0; i < g.V(); i++) {
 			if (!marked[i])
 				dfs(g, i, onStack, marked);
+			if(g.outdegree(i)==0)
+				outDegree0Count++;
 		}
+		
+		if(outDegree0Count != 1)
+			throw new IllegalArgumentException("Multiroot detected, not a rooted DAG");
 	}
-
-	private void checkRootedDAG(Digraph g) {
-		boolean[] marked = new boolean[g.V()];
-		int root = findRoot(g, 0, marked);
-
-		for (int i = 1; i < g.V(); i++) {
-			if (!marked[i]) {
-				int root_i = findRoot(g, i, marked);
-				if(root_i != root)
-					throw new IllegalArgumentException("Multiroot detected, not a rooted DAG");
-			}
-		}
-	}
-
-	private int findRoot(Digraph g, int v, boolean[] marked) {
-		int root = v;
-		marked[v] = true;
-		for (int p : g.adj(v))
-			root = findRoot(g, p, marked);
-
-		return root;
-	}
-
+	
 	private void dfs(Digraph g, int v, boolean[] onStack, boolean[] marked) {
 		onStack[v] = true;
 		marked[v] = true;
+		
 		for (int p : g.adj(v)) {
 			if (onStack[p])
 				throw new IllegalArgumentException("Cycle detected, not a rooted DAG");
