@@ -69,7 +69,7 @@ public class SAP {
 	 * @return the ancestor at index 0 and the shortest ancestral distance at 1,
 	 *         -1 if no such path
 	 */
-	public int[] closestCommonAncestor(Iterable<Integer> v, Iterable<Integer> w) {
+	private int[] closestCommonAncestor(Iterable<Integer> v, Iterable<Integer> w) {
 		if (v == null || w == null)
 			throw new java.lang.IllegalArgumentException();
 
