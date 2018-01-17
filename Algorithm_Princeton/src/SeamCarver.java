@@ -5,7 +5,6 @@ import edu.princeton.cs.algs4.Picture;
 public class SeamCarver {
 	private int[][] rgb;
 	private double[][] energy;
-	private boolean transposed;
 
 	// create a seam carver object based on the given picture
 	public SeamCarver(Picture picture) {
@@ -62,12 +61,6 @@ public class SeamCarver {
 	 *         the pixel to be removed from column x of the image.
 	 */
 	public int[] findHorizontalSeam() {
-		if (transposed) {
-			rgb = transpose(rgb);
-			energy = transpose(energy);
-			transposed = false;
-		}
-
 		double minSeamEnergy = Double.POSITIVE_INFINITY;
 		int seamEndY = 0;
 		// minimum cumulative energy of the seam to each pixel
@@ -82,7 +75,7 @@ public class SeamCarver {
 					energyTo[row][col] = 1000;
 				else
 					energyTo[row][col] = Double.POSITIVE_INFINITY;
-//				energy[row][col] = energy(col,row);
+				// energy[row][col] = energy(col,row);
 			}
 
 		for (int col = 0; col < width() - 1; col++)
@@ -113,12 +106,6 @@ public class SeamCarver {
 	 *         the pixel to be removed from row y of the image.
 	 */
 	public int[] findVerticalSeam() {
-		if (transposed) {
-			rgb = transpose(rgb);
-			energy = transpose(energy);
-			transposed = false;
-		}
-
 		double minSeamEnergy = Double.POSITIVE_INFINITY;
 		int seamEndX = 0;
 		// minimum cumulative energy of the seam to each pixel
@@ -133,7 +120,7 @@ public class SeamCarver {
 					energyTo[row][col] = 1000;
 				else
 					energyTo[row][col] = Double.POSITIVE_INFINITY;
-//				energy[row][col] = energy(col,row);
+				// energy[row][col] = energy(col,row);
 			}
 
 		for (int row = 0; row < height() - 1; row++)
@@ -159,40 +146,41 @@ public class SeamCarver {
 
 	// remove vertical seam from current picture
 	public void removeVerticalSeam(int[] seam) {
-		if (seam == null || !validateSeam(seam) || width() < 2)
+		if (seam == null || !validateSeam(seam,"Vertical") || width() < 2)
 			throw new java.lang.IllegalArgumentException();
 
-		if (transposed) {
-			rgb = transpose(rgb);
-			energy = transpose(energy);
-			transposed = false;
-		}
 		removeVerticalSeam(seam, rgb, energy);
 	}
 
 	private void removeVerticalSeam(int[] seam, int[][] rgb, double[][] energy) {
-		int[][] newRGB = new int[height()][width() - 1];
-		double[][] newEnergy = new double[height()][width() - 1];
+		int[][] newRGB = new int[rgb.length][rgb[0].length - 1];
+		double[][] newEnergy = new double[rgb.length][rgb[0].length - 1];
 
 		// shifting the values left to remove the seam
-		for (int row = 0; row < height(); row++) {
+		for (int row = 0; row < rgb.length; row++) {
 			if (seam[row] == 0) {
 				System.arraycopy(rgb[row], 1, newRGB[row], 0, newRGB[row].length);
 				System.arraycopy(energy[row], 1, newEnergy[row], 0, newEnergy[row].length);
-			} else if (seam[row] == width() - 1) {
+			} else if (seam[row] == rgb[0].length - 1) {
 				System.arraycopy(rgb[row], 0, newRGB[row], 0, newRGB[row].length);
 				System.arraycopy(energy[row], 0, newEnergy[row], 0, newEnergy[row].length);
 			} else {
 				System.arraycopy(rgb[row], 0, newRGB[row], 0, seam[row]);
-				System.arraycopy(rgb[row], seam[row] + 1, newRGB[row], seam[row], width() - seam[row] - 1);
+				System.arraycopy(rgb[row], seam[row] + 1, newRGB[row], seam[row], rgb[0].length - seam[row] - 1);
 				System.arraycopy(energy[row], 0, newEnergy[row], 0, seam[row]);
-				System.arraycopy(energy[row], seam[row] + 1, newEnergy[row], seam[row], width() - seam[row] - 1);
+				System.arraycopy(energy[row], seam[row] + 1, newEnergy[row], seam[row], rgb[0].length - seam[row] - 1);
 			}
 		}
 		this.rgb = newRGB;
 
 		// recalculating the energy of pixels along the seam
-		for (int row = 0; row < height(); row++) {
+		for (int row = 0; row < newEnergy.length; row++) {
+			//skip if the seam vertex in last column
+			if (seam[row] > newEnergy[0].length - 1) 
+				break;
+			
+			newEnergy[row][seam[row]] = energy(seam[row],row);
+			
 			if (row > 0)
 				newEnergy[row - 1][seam[row]] = energy(seam[row], row - 1);
 			if (seam[row] > 0)
@@ -207,14 +195,50 @@ public class SeamCarver {
 
 	// remove horizontal seam from current picture
 	public void removeHorizontalSeam(int[] seam) {
-		if (seam == null || !validateSeam(seam) || height() < 2)
+		if (seam == null || !validateSeam(seam,"Horizontal") || height() < 2)
 			throw new java.lang.IllegalArgumentException();
-		if (!transposed) {
-			rgb = transpose(rgb);
-			energy = transpose(energy);
-			transposed = true;
+		
+		int[][] newRGB = new int[rgb[0].length][rgb.length - 1];
+		double[][] newEnergy = new double[rgb[0].length][rgb.length - 1];
+		
+		for(int col=0;col<rgb[0].length;col++){
+			int row = 0;
+			int newRow = 0;
+			while(newRow < newRGB[0].length){
+				if(seam[col] != row){
+					newRGB[col][newRow] = rgb[row][col];
+					newEnergy[col][newRow] = energy[row][col];
+				}
+				else{
+					newRGB[col][newRow] = rgb[++row][col];
+					newEnergy[col][newRow] = energy[row][col];
+				}
+				
+				row++;
+				newRow++;
+			}
 		}
-		removeVerticalSeam(seam, rgb, energy);
+		rgb = transpose(newRGB);
+		
+		//recalculate the energy along the seam
+		for(int col=0;col<newEnergy.length;col++){
+			//last row is already removed, skip
+			if(seam[col] > newEnergy[0].length -1)
+				break;
+			
+			newEnergy[col][seam[col]] = energy(col,seam[col]);
+			
+			if(col>0)
+				newEnergy[col-1][seam[col]] = energy(col-1,seam[col]);
+			if(col<newEnergy.length -1)
+				newEnergy[col+1][seam[col]] = energy(col+1,seam[col]);
+			if(seam[col]>0)
+				newEnergy[col][seam[col]-1] = energy(col,seam[col]-1);
+			if(seam[col]<newEnergy[0].length-1)
+				newEnergy[col][seam[col]+1] = energy(col,seam[col]+1);
+		}
+		
+		energy = transpose(newEnergy);	
 	}
 
 	// transpose 2d array
@@ -238,9 +262,17 @@ public class SeamCarver {
 		return newArray;
 	}
 
-	private boolean validateSeam(int[] seam) {
-		for (int i = 0; i < seam.length - 1; i++) {
-			if (Math.abs(seam[i] - seam[i + 1]) > 1)
+	private boolean validateSeam(int[] seam, String direction) {
+		if(direction.equalsIgnoreCase("Vertical") && seam.length != height())
+			return false;
+		if(direction.equalsIgnoreCase("Horizontal") && seam.length != width())
+			return false;
+		for (int i = 0; i < seam.length; i++) {
+			if (i<seam.length-1 && Math.abs(seam[i] - seam[i + 1]) > 1)
+				return false;
+			if(direction.equalsIgnoreCase("Vertical") && (seam[i]<0||seam[i]>width()-1))
+				return false;
+			if(direction.equalsIgnoreCase("Horizontal") && (seam[i]<0||seam[i]>height()-1))
 				return false;
 		}
 
@@ -295,6 +327,8 @@ public class SeamCarver {
 		SeamCarver sc = new SeamCarver(new Picture(args[0]));
 		int[][] array = { { 1, 2 }, { 3, 4 }, { 5, 6 } };
 		int[][] transposed = sc.transpose(array);
+		int[] hSeam = {2,3,2};
+		sc.removeHorizontalSeam(hSeam);
 
 		System.out.println(Arrays.toString(transposed));
 	}
