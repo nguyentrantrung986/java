@@ -3,27 +3,34 @@ import java.util.Arrays;
 import edu.princeton.cs.algs4.Picture;
 
 public class SeamCarver {
-	private Picture pic;
 	private int[][] rgb;
+	private double[][] energy;
+	private boolean transposed;
 
 	// create a seam carver object based on the given picture
 	public SeamCarver(Picture picture) {
-		if(picture == null) throw new java.lang.IllegalArgumentException();
-		this.pic = new Picture(picture);
-		
-		rgb = new int[pic.height()][pic.width()];
+		if (picture == null)
+			throw new java.lang.IllegalArgumentException();
+		rgb = new int[picture.height()][picture.width()];
+		// energy of each pixel in the image
+		energy = new double[height()][width()];
+
 		for (int row = 0; row < height(); row++)
-			for (int col = 0; col < width(); col++) 
-				rgb[row][col] = pic.getRGB(col, row);
+			for (int col = 0; col < width(); col++)
+				rgb[row][col] = picture.getRGB(col, row);
+
+		for (int row = 0; row < height(); row++)
+			for (int col = 0; col < width(); col++)
+				energy[row][col] = energy(col, row);
 	}
 
 	// current picture
 	public Picture picture() {
-		pic = new Picture(rgb[0].length,rgb.length);
+		Picture pic = new Picture(rgb[0].length, rgb.length);
 		for (int row = 0; row < height(); row++)
-			for (int col = 0; col < width(); col++) 
+			for (int col = 0; col < width(); col++)
 				pic.setRGB(col, row, rgb[row][col]);
-		
+
 		return new Picture(pic);
 	}
 
@@ -40,7 +47,7 @@ public class SeamCarver {
 	// energy of pixel at column x and row y
 	public double energy(int x, int y) {
 		if (x < 0 || x > width() - 1 || y < 0 || y > height() - 1)
-			throw new java.lang.IllegalArgumentException();
+			throw new java.lang.IllegalArgumentException("Illegal coordinate " + x + " " + y);
 		if (x == 0 || y == 0 || x == width() - 1 || y == height() - 1)
 			return 1000;
 		double deltaSquaredX = deltaSquared(rgb[y][x - 1], rgb[y][x + 1]);
@@ -55,12 +62,16 @@ public class SeamCarver {
 	 *         the pixel to be removed from column x of the image.
 	 */
 	public int[] findHorizontalSeam() {
+		if (transposed) {
+			rgb = transpose(rgb);
+			energy = transpose(energy);
+			transposed = false;
+		}
+
 		double minSeamEnergy = Double.POSITIVE_INFINITY;
 		int seamEndY = 0;
 		// minimum cumulative energy of the seam to each pixel
 		double[][] energyTo = new double[height()][width()];
-		// energy of each pixel in the image
-		double[][] energy = new double[height()][width()];
 		// y coordinate of the pixel in previous row which is selected for
 		// minimum total energy
 		int[][] pixelTo = new int[height()][width()];
@@ -71,11 +82,10 @@ public class SeamCarver {
 					energyTo[row][col] = 1000;
 				else
 					energyTo[row][col] = Double.POSITIVE_INFINITY;
-
-				energy[row][col] = energy(col, row);
+//				energy[row][col] = energy(col,row);
 			}
 
-		for (int col = 0; col < width() -1; col++)
+		for (int col = 0; col < width() - 1; col++)
 			for (int row = 0; row < height(); row++)
 				relaxHorizontal(col, row, energyTo, energy, pixelTo);
 
@@ -103,12 +113,16 @@ public class SeamCarver {
 	 *         the pixel to be removed from row y of the image.
 	 */
 	public int[] findVerticalSeam() {
+		if (transposed) {
+			rgb = transpose(rgb);
+			energy = transpose(energy);
+			transposed = false;
+		}
+
 		double minSeamEnergy = Double.POSITIVE_INFINITY;
 		int seamEndX = 0;
 		// minimum cumulative energy of the seam to each pixel
 		double[][] energyTo = new double[height()][width()];
-		// energy of each pixel in the image
-		double[][] energy = new double[height()][width()];
 		// x coordinate of the pixel in previous row which is selected for
 		// minimum total energy
 		int[][] pixelTo = new int[height()][width()];
@@ -119,8 +133,7 @@ public class SeamCarver {
 					energyTo[row][col] = 1000;
 				else
 					energyTo[row][col] = Double.POSITIVE_INFINITY;
-
-				energy[row][col] = energy(col, row);
+//				energy[row][col] = energy(col,row);
 			}
 
 		for (int row = 0; row < height() - 1; row++)
@@ -143,50 +156,94 @@ public class SeamCarver {
 
 		return seam;
 	}
-	
+
 	// remove vertical seam from current picture
 	public void removeVerticalSeam(int[] seam) {
-		if(seam == null || !validateSeam(seam) || width() < 2) throw new java.lang.IllegalArgumentException();
-		int[][] newRGB = new int[height()][width()-1];
-		for(int row=0; row < height(); row++){
-			if(seam[row]==0)
-				System.arraycopy(rgb[row], 1, newRGB[row], 0, newRGB.length);
-			else if(seam[row] == width()-1)
-				System.arraycopy(rgb[row], 0, newRGB[row], 0, newRGB.length);
-			else{
+		if (seam == null || !validateSeam(seam) || width() < 2)
+			throw new java.lang.IllegalArgumentException();
+
+		if (transposed) {
+			rgb = transpose(rgb);
+			energy = transpose(energy);
+			transposed = false;
+		}
+		removeVerticalSeam(seam, rgb, energy);
+	}
+
+	private void removeVerticalSeam(int[] seam, int[][] rgb, double[][] energy) {
+		int[][] newRGB = new int[height()][width() - 1];
+		double[][] newEnergy = new double[height()][width() - 1];
+
+		// shifting the values left to remove the seam
+		for (int row = 0; row < height(); row++) {
+			if (seam[row] == 0) {
+				System.arraycopy(rgb[row], 1, newRGB[row], 0, newRGB[row].length);
+				System.arraycopy(energy[row], 1, newEnergy[row], 0, newEnergy[row].length);
+			} else if (seam[row] == width() - 1) {
+				System.arraycopy(rgb[row], 0, newRGB[row], 0, newRGB[row].length);
+				System.arraycopy(energy[row], 0, newEnergy[row], 0, newEnergy[row].length);
+			} else {
 				System.arraycopy(rgb[row], 0, newRGB[row], 0, seam[row]);
-				System.arraycopy(rgb[row], seam[row]+1, newRGB[row], seam[row], width()-seam[row]-1);
+				System.arraycopy(rgb[row], seam[row] + 1, newRGB[row], seam[row], width() - seam[row] - 1);
+				System.arraycopy(energy[row], 0, newEnergy[row], 0, seam[row]);
+				System.arraycopy(energy[row], seam[row] + 1, newEnergy[row], seam[row], width() - seam[row] - 1);
 			}
 		}
-		
-		rgb = newRGB;
+		this.rgb = newRGB;
+
+		// recalculating the energy of pixels along the seam
+		for (int row = 0; row < height(); row++) {
+			if (row > 0)
+				newEnergy[row - 1][seam[row]] = energy(seam[row], row - 1);
+			if (seam[row] > 0)
+				newEnergy[row][seam[row] - 1] = energy(seam[row] - 1, row);
+			if (row < newEnergy.length - 1)
+				newEnergy[row + 1][seam[row]] = energy(seam[row], row + 1);
+			if (seam[row] < newEnergy[0].length - 1)
+				newEnergy[row][seam[row] + 1] = energy(seam[row] + 1, row);
+		}
+		this.energy = newEnergy;
 	}
-	
+
 	// remove horizontal seam from current picture
-	public void removeHorizontalSeam(int[] seam){
-		if(seam == null || !validateSeam(seam) || height() < 2) throw new java.lang.IllegalArgumentException();
-		rgb = transpose(rgb);
-		removeVerticalSeam(seam);
-		rgb = transpose(rgb);
+	public void removeHorizontalSeam(int[] seam) {
+		if (seam == null || !validateSeam(seam) || height() < 2)
+			throw new java.lang.IllegalArgumentException();
+		if (!transposed) {
+			rgb = transpose(rgb);
+			energy = transpose(energy);
+			transposed = true;
+		}
+		removeVerticalSeam(seam, rgb, energy);
 	}
-	
-	
-	//transpose 2d array
-	private int[][] transpose(int[][] array){
+
+	// transpose 2d array
+	private int[][] transpose(int[][] array) {
 		int[][] newArray = new int[array[0].length][array.length];
-		
-		for(int col=0; col<array[0].length;col++)
-			for(int row=0; row<array.length;row++)
+
+		for (int col = 0; col < array[0].length; col++)
+			for (int row = 0; row < array.length; row++)
 				newArray[col][row] = array[row][col];
-		
+
 		return newArray;
 	}
-	private boolean validateSeam(int[] seam){
-		for(int i=0;i<seam.length-1;i++){
-			if(Math.abs(seam[i]-seam[i+1])>1)
+
+	private double[][] transpose(double[][] array) {
+		double[][] newArray = new double[array[0].length][array.length];
+
+		for (int col = 0; col < array[0].length; col++)
+			for (int row = 0; row < array.length; row++)
+				newArray[col][row] = array[row][col];
+
+		return newArray;
+	}
+
+	private boolean validateSeam(int[] seam) {
+		for (int i = 0; i < seam.length - 1; i++) {
+			if (Math.abs(seam[i] - seam[i + 1]) > 1)
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -210,19 +267,19 @@ public class SeamCarver {
 
 	// relax 3 pixels on the right, 2 if the pixel is in first or last row
 	private void relaxHorizontal(int col, int row, double[][] energyTo, double[][] energy, int[][] pixelTo) {
-		if (row > 0 && energyTo[row-1][col+1] > energyTo[row][col] + energy[row-1][col+1]){
-			energyTo[row-1][col+1] = energyTo[row][col] + energy[row-1][col+1];
-			pixelTo[row-1][col+1] = row;
+		if (row > 0 && energyTo[row - 1][col + 1] > energyTo[row][col] + energy[row - 1][col + 1]) {
+			energyTo[row - 1][col + 1] = energyTo[row][col] + energy[row - 1][col + 1];
+			pixelTo[row - 1][col + 1] = row;
 		}
-		
-		if (energyTo[row][col+1] > energyTo[row][col] + energy[row][col+1]){
-			energyTo[row][col+1] = energyTo[row][col] + energy[row][col+1];
-			pixelTo[row][col+1] = row;
+
+		if (energyTo[row][col + 1] > energyTo[row][col] + energy[row][col + 1]) {
+			energyTo[row][col + 1] = energyTo[row][col] + energy[row][col + 1];
+			pixelTo[row][col + 1] = row;
 		}
-		
-		if(row < height()-1 && energyTo[row+1][col+1] > energyTo[row][col] + energy[row+1][col+1]){
-			energyTo[row+1][col+1] = energyTo[row][col] + energy[row+1][col+1];
-			pixelTo[row+1][col+1] = row;
+
+		if (row < height() - 1 && energyTo[row + 1][col + 1] > energyTo[row][col] + energy[row + 1][col + 1]) {
+			energyTo[row + 1][col + 1] = energyTo[row][col] + energy[row + 1][col + 1];
+			pixelTo[row + 1][col + 1] = row;
 		}
 	}
 
@@ -236,9 +293,9 @@ public class SeamCarver {
 
 	public static void main(String[] args) {
 		SeamCarver sc = new SeamCarver(new Picture(args[0]));
-		int[][] array = {{1,2},{3,4},{5,6}};
+		int[][] array = { { 1, 2 }, { 3, 4 }, { 5, 6 } };
 		int[][] transposed = sc.transpose(array);
-		
+
 		System.out.println(Arrays.toString(transposed));
 	}
 }
