@@ -141,6 +141,9 @@ public class BaseballElimination {
 	}
 
 	public Iterable<String> certificateOfElimination(String team) {
+		if (!teamIndexLookup.contains(team))
+			throw new java.lang.IllegalArgumentException("Invalid team name.");
+		
 		int x = teamIndexLookup.get(team);
 		if(x != query)
 			isEliminated(team);
