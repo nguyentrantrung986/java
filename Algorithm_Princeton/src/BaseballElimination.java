@@ -39,6 +39,10 @@ public class BaseballElimination {
 		
 		flowNetworkVertices = (w.length-1)*(w.length-2)/2 + w.length - 1 + 2;
 	}
+	
+	public int numberOfTeams()  {
+		return w.length;
+	}
 
 	public Iterable<String> teams() {
 		return teamIndexLookup.keys();
@@ -191,10 +195,10 @@ public class BaseballElimination {
 
 	public static void main(String[] args) {
 		BaseballElimination division = new BaseballElimination(args[0]);
-//		System.out.println(division.teamVertex(3, 4));
-//		System.out.println(division.teamIndex(3, 3));
-//		System.out.println(division.matchVertex(3, 2));
-//		System.out.println(Arrays.toString(division.teamVertices(10)));
+		System.out.println(division.teamVertex(3, 4));
+		System.out.println(division.teamIndex(3, 3));
+		System.out.println(division.matchVertex(3, 2));
+		System.out.println(Arrays.toString(division.teamVertices(10)));
 //		division.isEliminated("England");
 //		division.certificateOfElimination("England");
 		
