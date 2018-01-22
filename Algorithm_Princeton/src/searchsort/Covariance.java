@@ -6,7 +6,10 @@ import java.util.*;
  * Demonstrate that java arrays are covariant but generics are not,i.e. 
  * String[] is a subtype of Object[], but Stack<String> is not a subtype of Stack<Object>
  */
+@SuppressWarnings("unused")
 public class Covariance<T> {
+	
+	@SuppressWarnings("rawtypes")
 	public static void main(String[] args){
 		//making generic covariant will break its type safety
 		List<Integer> li = new ArrayList<Integer>();

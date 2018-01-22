@@ -4,6 +4,7 @@ public class FixedCapacityGenericStack<Item> {
 	private Item[] s;
 	private int N = 0;
 	
+	@SuppressWarnings("unchecked")
 	public FixedCapacityGenericStack(int capacity){
 		/*since the values of the Object array elements are all null, they can be cast to any other
 		reference type. Formally, null is a singleton member of the null type, 
