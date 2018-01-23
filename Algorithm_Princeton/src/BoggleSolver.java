@@ -113,12 +113,16 @@ public class BoggleSolver {
 			boolean found = false;
 			if (x.val != null)
 				return true;
-
-			for (int i = 0; i < R; i++) {
-				found = hasKeysWithPrefix(x.next[i]);
-				if (found)
-					break;
-			}
+			for (int i = 0; i < R; i++) 
+				//non-null node indicates there are keys down the tries
+				if(x.next[i] != null)
+					return true;
+			
+//			for (int i = 0; i < R; i++) {
+//				found = hasKeysWithPrefix(x.next[i]);
+//				if (found)
+//					break;
+//			}
 			return found;
 		}
 
