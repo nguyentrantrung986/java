@@ -15,7 +15,8 @@ public class CircularSuffixArray {
 		index = new int[W];	
 		for(int i=0; i<W; i++)
 			index[i] = i;
-		circularSuffixLSDSort();
+		//circularSuffixLSDSort();
+		threeWaySuffixSort(s, 0, W-1, 0);
 	}
 	
 	public int length() {
@@ -52,6 +53,33 @@ public class CircularSuffixArray {
 		}
 	}
 	
+	private void threeWaySuffixSort(String s, int lo, int hi, int d) {
+		if(lo>=hi) return;
+		int lt = lo;
+		int gt = hi;
+		int i = lo + 1;
+		char v = circularSuffixCharAt(lo, d);
+		while(i <= gt){
+			char c = circularSuffixCharAt(i, d);
+			if(c < v)
+				exchange(index, lt++, i++);
+			else if(c > v)
+				exchange(index, i, gt--);
+			else
+				i++;
+		}
+		
+		threeWaySuffixSort(s, lo, lt-1, d);
+		if(d < s.length()) threeWaySuffixSort(s, lt, gt, d+1);
+		threeWaySuffixSort(s, gt+1, hi, d);
+	}
+	
+	private void exchange(int[] a, int i, int j){
+		int tmp = a[i];
+		a[i] = a[j];
+		a[j] = tmp;
+	}
+	
 	//return the dth character of the ith suffix in array index[i]
 	private char circularSuffixCharAt(int i, int d){
 		if(d+index[i]<W)
@@ -64,6 +92,6 @@ public class CircularSuffixArray {
 	public static void main(String[] args) {
 		CircularSuffixArray csa = new CircularSuffixArray("ABRACADABRA!");
 		for(int i=0; i < csa.length(); i++)
-			System.out.println(csa.index(i));
+			System.out.print(csa.index(i)+ " ");
 	}
 }
